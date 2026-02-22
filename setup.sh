@@ -20,6 +20,7 @@
 #        멀티 GPU 충돌 방지 (CUDA_VISIBLE_DEVICES)
 #        .env API 키 자동 로드
 # v3.1 - 필요한 실습 파일만 다운로드, nltk 데이터 포함
+# v3.2 - rouge-score, bert-score, matplotlib, llama-cpp-python 추가
 #===============================================================================
 
 set -e
@@ -51,7 +52,7 @@ log_error() {
 print_banner() {
     echo ""
     echo "╔════════════════════════════════════════════════════════════════════╗"
-    echo "║           AI 교육 환경 설정 스크립트 (AIDENTIFY) v3.1            ║"
+    echo "║           AI 교육 환경 설정 스크립트 (AIDENTIFY) v3.2            ║"
     echo "║                                                                    ║"
     echo "║  • VSCode + Claude Code CLI                                        ║"
     echo "║  • LLM Fine-tuning (HuggingFace + PEFT + LoRA)                    ║"
@@ -308,6 +309,10 @@ setup_llm_environment() {
         langchain langchain-community langchain-openai \
         langchain-text-splitters faiss-cpu \
         pypdf python-dotenv beautifulsoup4 requests
+
+    # 평가 메트릭 / 시각화 / GGUF
+    log_info "평가 및 유틸리티 패키지 설치 중..."
+    pip install rouge-score bert-score matplotlib llama-cpp-python
     
     # Jupyter
     log_info "Jupyter 환경 설치 중..."
@@ -391,7 +396,7 @@ setup_environment_variables() {
     
     cat >> ~/.bashrc << 'EOF'
 
-# ====== AI Training Environment v3.1 ======
+# ====== AI Training Environment v3.2 ======
 export AI_TRAINING_HOME="$HOME/ai-training-projects"
 export AI_VENV="$HOME/ai-training-env"
 
