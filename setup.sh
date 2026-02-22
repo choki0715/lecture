@@ -299,6 +299,9 @@ setup_llm_environment() {
     log_info "NLP 패키지 설치 중..."
     pip install \
         gensim nltk konlpy sentence-transformers
+
+    # nltk 데이터 다운로드
+    python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"    
     
     # RAG
     log_info "RAG 패키지 설치 중..."
