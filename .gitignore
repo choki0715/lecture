@@ -1,2 +1,12 @@
-__pychche__
-.ipynb_checkpoint
+.env
+lora_model/
+lora_output/
+test_out/
+fasttext_model*
+*.npy
+*.log
+quality_evaluation_results.*
+quantization_comparison.png
+__pycache__/
+.ipynb_checkpoints/
+unsloth_compiled_cache/
