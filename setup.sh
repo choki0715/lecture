@@ -19,6 +19,7 @@
 #        transformers==4.46.0 + trl==0.12.0 + peft==0.14.0 호환 조합
 #        멀티 GPU 충돌 방지 (CUDA_VISIBLE_DEVICES)
 #        .env API 키 자동 로드
+# v3.1 - 필요한 실습 파일만 다운로드, nltk 데이터 포함
 #===============================================================================
 
 set -e
@@ -50,14 +51,12 @@ log_error() {
 print_banner() {
     echo ""
     echo "╔════════════════════════════════════════════════════════════════════╗"
-    echo "║           AI 교육 환경 설정 스크립트 (AIDENTIFY) v3.0            ║"
+    echo "║           AI 교육 환경 설정 스크립트 (AIDENTIFY) v3.1            ║"
     echo "║                                                                    ║"
-    echo "║  • VSCode                                                          ║"
-    echo "║  • Claude Code CLI                                                 ║"
+    echo "║  • VSCode + Claude Code CLI                                        ║"
     echo "║  • LLM Fine-tuning (HuggingFace + PEFT + LoRA)                    ║"
     echo "║  • RAG (LangChain + FAISS + OpenAI)                                ║"
-    echo "║  • Streamlit                                                       ║"
-    echo "║  • 한국어 NLP (KoNLPy)                                             ║"
+    echo "║  • Streamlit + 한국어 NLP (KoNLPy)                                 ║"
     echo "╚════════════════════════════════════════════════════════════════════╝"
     echo ""
 }
@@ -301,7 +300,7 @@ setup_llm_environment() {
         gensim nltk konlpy sentence-transformers
 
     # nltk 데이터 다운로드
-    python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"    
+    python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
     
     # RAG
     log_info "RAG 패키지 설치 중..."
@@ -342,44 +341,36 @@ import langchain; print(f'  LangChain: {langchain.__version__}')
 }
 
 #-------------------------------------------------------------------------------
-# 예제 프로젝트 설정
+# 실습 파일 다운로드 (필요한 파일만)
 #-------------------------------------------------------------------------------
 setup_example_project() {
     log_info "예제 프로젝트 설정 중..."
     
     PROJECT_DIR="$HOME/ai-training-projects"
-    mkdir -p "$PROJECT_DIR"
+    LECTURE_DIR="$PROJECT_DIR/lecture"
+    mkdir -p "$LECTURE_DIR"
+    cd "$LECTURE_DIR"
     
-    # GitHub에서 lecture 리포 클론
-    log_info "실습 노트북 다운로드 중..."
-    if [ -d "$PROJECT_DIR/lecture" ]; then
-        cd "$PROJECT_DIR/lecture"
-        git pull || true
-    else
-        cd "$PROJECT_DIR"
-        git clone https://github.com/choki0715/lecture.git || {
-            mkdir -p "$PROJECT_DIR/lecture"
-            cd "$PROJECT_DIR/lecture"
-            BASE_URL="https://raw.githubusercontent.com/choki0715/lecture/main"
-            FILES=(
-                "tokenization.ipynb"
-                "word2vec_embedding.ipynb"
-                "fasttext_embedding.ipynb"
-                "quant_simple.ipynb"
-                "quant_perform.ipynb"
-                "quantization_comparison.ipynb"
-                "lora_finetuning.ipynb"
-                "train_data.csv"
-                "a_poor_dog.txt"
-                "app.py"
-                "rag_app.py"
-                "claude_code_lab_guide.md"
-            )
-            for f in "${FILES[@]}"; do
-                wget -q "${BASE_URL}/${f}" -O "${f}" || true
-            done
-        }
-    fi
+    BASE_URL="https://raw.githubusercontent.com/choki0715/lecture/master"
+    FILES=(
+        "tokenization.ipynb"
+        "word2vec_embedding.ipynb"
+        "fasttext_embedding.ipynb"
+        "quant_simple.ipynb"
+        "quant_perform.ipynb"
+        "quantization_comparison.ipynb"
+        "lora_finetuning.ipynb"
+        "app.py"
+        "rag_app.py"
+        "train_data.csv"
+        "a_poor_dog.txt"
+        "claude_code_lab_guide.md"
+    )
+    
+    log_info "실습 파일 다운로드 중..."
+    for f in "${FILES[@]}"; do
+        wget -q "${BASE_URL}/${f}" -O "${f}" && log_info "  ✓ ${f}" || log_warning "  ✗ ${f} 다운로드 실패"
+    done
     
     # Claude Code 실습 폴더
     mkdir -p "$PROJECT_DIR/ai-assistant"
@@ -400,7 +391,7 @@ setup_environment_variables() {
     
     cat >> ~/.bashrc << 'EOF'
 
-# ====== AI Training Environment v3.0 ======
+# ====== AI Training Environment v3.1 ======
 export AI_TRAINING_HOME="$HOME/ai-training-projects"
 export AI_VENV="$HOME/ai-training-env"
 
